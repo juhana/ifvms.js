@@ -337,6 +337,25 @@ TODO:
 			this.m.setUint16( data[0], text.length );
 			this.m.setBuffer( data[0] + 2, text );
 		}
+
+		// eval() stream
+		if ( stream == 5 )
+		{
+			this.streams[4].unshift( [ addr, '' ] );
+		}
+		if ( stream == -5 )
+		{
+			data = this.streams[4].shift();
+
+			try {
+				text = this.text.text_to_zscii( '' + window['eval']( data[1] ) );
+			} catch( e ) {
+				console.log( 'Invalid JavaScript: '+data[ 1 ] );
+			}
+
+			this.m.setUint16( data[0], text.length );
+			this.m.setBuffer( data[0] + 2, text );
+		}
 	},
 	
 	// Print text!
