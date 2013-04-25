@@ -341,16 +341,21 @@ TODO:
 		}
 
 		// eval() stream
-		if ( stream == 5 )
+		if ( stream === 5 )
 		{
+			// flush the text stream so it's available for JS stream to use
+			this.ui.flush();
+			this.ui.e.outputEvent( this.ui.e.orders );
+			this.ui.e.orders = [];
+
 			this.streams[4].unshift( [ addr, '' ] );
 		}
-		if ( stream == -5 )
+		if ( stream === -5 )
 		{
 			data = this.streams[4].shift();
 
 			try {
-				text = this.text.text_to_zscii( '' + window['eval']( data[1] ) );
+				text = this.text_to_zscii( '' + window['eval']( data[1] ) );
 			} catch( e ) {
 				console.log( 'Invalid JavaScript: '+data[ 1 ] );
 			}
@@ -358,6 +363,24 @@ TODO:
 			this.m.setUint16( data[0], text.length );
 			this.m.setBuffer( data[0] + 2, text );
 		}
+
+        // HTML stream
+        if( stream === 6 )
+        {
+            this.streams[5].unshift( [ addr, '' ] );
+        }
+        if ( stream === -6 )
+        {
+            data = this.streams[5].shift();
+            var htmlElem = data[1].split( ' ' )[0];
+            var elemClass = data[1].split( ' ' );
+            elemClass.shift();
+            elemClass = elemClass.join( ' ' );
+            this.ui.buffer += '<' + htmlElem + ' class="' + elemClass + '"></' + htmlElem + '>';
+            this.ui.flush();
+            this.ui.e.outputEvent( this.ui.e.orders );
+            this.ui.e.orders = [];
+        }
 	},
 	
 	// Print text!
@@ -368,6 +391,15 @@ TODO:
 		{
 			this.streams[2][0][1] += text;
 		}
+        // eval() stream gets it next
+        else if ( this.streams[4].length )
+        {
+            this.streams[4][0][1] += text;
+        }
+        else if ( this.streams[5].length )
+        {
+            this.streams[5][0][1] += text;
+        }
 		// Don't print if stream 1 was switched off (why would you do that?!)
 		else if ( this.streams[0] )
 		{
@@ -587,7 +619,7 @@ TODO:
 			
 			// IO stuff
 			orders: [],
-			streams: [ 1, 0, [], 0 ],
+			streams: [ 1, 0, [], 0, [], [] ],
 			
 			// Get some header variables
 			version: version,
