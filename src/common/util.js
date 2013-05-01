@@ -51,12 +51,14 @@ function extend( old, add )
 	return old;
 }
 
+/*
 // Console dummy funcs
 var console = typeof console !== 'undefined' ? console : {
 	log: function(){},
 	info: function(){},
 	warn: function(){}
 };
+*/
 
 // Utilities for 16-bit signed arithmetic
 function U2S( value )

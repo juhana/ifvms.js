@@ -316,6 +316,7 @@ TODO:
 	output_stream: function( stream, addr )
 	{
 		stream = U2S( stream );
+console.log( 'Stream '+stream );
 		if ( stream === 1 )
 		{
 			this.streams[0] = 1;
@@ -452,6 +453,7 @@ TODO:
 			}
 			val = this.unicode_table[ val ];
 		}
+        console.log( 'printing "'+val+'"' );
 		this._print( val );
 	},
 	
